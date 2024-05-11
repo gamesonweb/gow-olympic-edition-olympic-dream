@@ -39,11 +39,15 @@ export class SceneManager {
     }
 
     RegisterScene(id: string, scene: GameScene): void {
-        scene.Init(this.engine);
+        scene.Init(this);
         this.scenes.set(id, scene);
     }
 
     Jump(id: string): void{
         this.currentSceneId = id;
+    }
+
+    GetEngine(): Engine{
+        return this.engine;
     }
 }

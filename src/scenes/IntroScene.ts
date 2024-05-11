@@ -3,17 +3,26 @@ import "@babylonjs/loaders";
 
 import { Inspector } from '@babylonjs/inspector';
 import { GameScene } from "@/interfaces/GameScene";
+import { SceneManager } from "./SceneManager";
 
 export class IntroScene implements GameScene {
     scene!: Scene;
     engine!: Engine;
+    sceneManager!: SceneManager;
 
-    Init(engine: Engine): void {
-        this.engine = engine;
+    Init(sceneManager: SceneManager): void {
+        this.sceneManager = sceneManager;
+        this.engine = sceneManager.GetEngine();
         this.scene = this.CreateScene();
     }
 
-    Update(eventManage: DeviceSourceManager): void {
+    Update(eventManager: DeviceSourceManager): void {
+        if (eventManager.getDeviceSource(DeviceType.Keyboard)) {
+            if(eventManager.getDeviceSource(DeviceType.Keyboard)?.getInput(90) == 1){
+                this.sceneManager.Jump("main");
+            }
+        }
+
         this.scene.render();
     }
 
