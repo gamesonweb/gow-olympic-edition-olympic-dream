@@ -9,6 +9,7 @@ import { defineComponent } from 'vue';
 import { BasicScene } from '@/scenes/BasicScene';
 import { SceneManager } from '@/scenes/SceneManager';
 import { IntroScene } from '@/scenes/IntroScene';
+import { BowChallengeScene } from '@/scenes/competitions/BowChallengeScene'
 
 export default defineComponent({
   name: 'MainGame',
@@ -16,10 +17,13 @@ export default defineComponent({
     const canvas = document.querySelector("canvas")!;
     canvas.focus();
     const sceneManager = new SceneManager(canvas);
-    sceneManager.RegisterScene("intro", new IntroScene());
-    sceneManager.RegisterScene("main", new BasicScene());
+    sceneManager.InitPhysic().then(() => {
+      sceneManager.RegisterScene("intro", new IntroScene());
+      sceneManager.RegisterScene("main", new BasicScene());
+      sceneManager.RegisterScene("challenge_bow", new BowChallengeScene());
     
-    sceneManager.Jump("intro");
+      sceneManager.Jump("main");
+    });
   }
 });
 </script>

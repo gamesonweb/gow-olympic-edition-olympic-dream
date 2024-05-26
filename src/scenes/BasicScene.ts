@@ -1,20 +1,74 @@
-import {Scene, Engine, SceneLoader, FreeCamera, Vector3, HemisphericLight, MeshBuilder, DeviceType, DeviceSourceManager} from "@babylonjs/core";
+import {ActionManager, AnimationGroup, ExecuteCodeAction, Scene, Engine, SceneLoader, FreeCamera, Vector3, HemisphericLight, MeshBuilder, DeviceType, DeviceSourceManager, Mesh, AbstractMesh} from "@babylonjs/core";
 import "@babylonjs/loaders";
 
 import { Inspector } from '@babylonjs/inspector';
 import { GameScene } from "@/interfaces/GameScene";
 import { SceneManager } from "./SceneManager";
+import { AbstractInputManager } from "@/inputs/AbstractInputManager";
 
 export class BasicScene implements GameScene {
     scene!: Scene;
     engine!: Engine;
 
+    hero!: AbstractMesh;
+
+    walkingAnim!: AnimationGroup;
+    idleAnim!: AnimationGroup;
+    animating!: boolean;
+
+    loaded!: boolean;
+
+    constructor(){
+        this.loaded = false;
+    }
+
     Init(sceneManager: SceneManager): void {
         this.engine = sceneManager.GetEngine();
         this.scene = this.CreateScene();
+
+        this.animating = true;
     }
 
-    Update(eventManage: DeviceSourceManager): void {
+    Update(eventManage: AbstractInputManager): void {
+        if(this.loaded){
+            const heroSpeed = 0.03;
+            const heroRotationSpeed = 0.1;
+
+            let keydown = false;
+
+            if (eventManage.GetUp()) {
+                if(eventManage.CheckDelta()){
+                    this.hero.moveWithCollisions(this.hero.forward.scaleInPlace(heroSpeed));
+                }
+                keydown = true;
+            }
+            if (eventManage.GetLeft()) {
+                if(eventManage.CheckDelta()){
+                    this.hero.rotate(Vector3.Up(), -heroRotationSpeed);
+                }
+                keydown = true;
+            }
+            if (eventManage.GetRight()) {
+                if(eventManage.CheckDelta()){
+                    this.hero.rotate(Vector3.Up(), heroRotationSpeed);
+                }
+                keydown = true;
+            }
+
+            if (keydown) {
+                if (!this.animating) {
+                    this.animating = true;
+                    this.walkingAnim.start(true, 1.0, this.walkingAnim.from, this.walkingAnim.to, false);
+                }
+            }
+            else {
+                if (this.animating) {    
+                    this.idleAnim.start(true, 1.0, this.idleAnim.from, this.idleAnim.to, false);
+                    this.walkingAnim.stop();
+                    this.animating = false;
+                }
+            }
+        }
         this.scene.render();
     }
 
@@ -40,22 +94,19 @@ export class BasicScene implements GameScene {
             height:10
         },this.scene);
 
-        SceneLoader.ImportMesh("", "./models/", "main.glb", scene, function (newMeshes, particleSystems, skeletons, animationGroups) {
-            const hero = newMeshes[0];
+        SceneLoader.ImportMesh("", "./models/", "main.glb", scene,  (newMeshes, particleSystems, skeletons, animationGroups) => {
+            this.hero = newMeshes[0];
 
             //Scale the model down
-            hero.scaling.scaleInPlace(0.1);
+            this.hero.scaling.scaleInPlace(0.1);
 
             //Lock camera on the character
-            camera.target = hero.position;
+            camera.target = this.hero.position;
 
             //Get the Samba animation Group
-            const idleAnim = scene.getAnimationGroupByName("Idle");
-
-            if(idleAnim){
-                //Play the Samba animation
-                idleAnim.start(true, 1.0, idleAnim.from, idleAnim.to, false);
-            }
+            this.idleAnim = scene.getAnimationGroupByName("Idle")!;
+            this.walkingAnim = scene.getAnimationGroupByName("Walking")!;
+            this.loaded = true;
         });
 
         return scene;

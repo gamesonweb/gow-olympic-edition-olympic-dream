@@ -9,9 +9,10 @@
   },
   "dependencies": {
     "@babylonjs/core": "^6.48.1",
-    "@babylonjs/loaders": "^6.48.1",
-    "@babylonjs/inspector": "^6.48.1",
     "@babylonjs/gui": "^6.48.1",
+    "@babylonjs/havok": "^1.3.4",
+    "@babylonjs/inspector": "^6.48.1",
+    "@babylonjs/loaders": "^6.48.1",
     "vue": "^3.2.13"
   },
   "devDependencies": {

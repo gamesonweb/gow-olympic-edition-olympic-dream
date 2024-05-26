@@ -4,12 +4,17 @@ import "@babylonjs/loaders";
 import { Inspector } from '@babylonjs/inspector';
 
 import { GameScene } from '../interfaces/GameScene';
+import HavokPhysics from "@babylonjs/havok";
+import { HavokPhysicsWithBindings } from "@babylonjs/havok";
+import { AbstractInputManager } from "@/inputs/AbstractInputManager";
 
 export class SceneManager {
     currentSceneId: string;
     scenes: Map<string, GameScene>;
     engine: Engine;
-    deviceSourceManager: DeviceSourceManager;
+    abstractDeviceSourceManager: AbstractInputManager;
+    hk!: HavokPhysicsWithBindings;
+    
 
     constructor(private canvas: HTMLCanvasElement){
         this.engine = new Engine(this.canvas, true);
@@ -17,11 +22,7 @@ export class SceneManager {
 
         this.currentSceneId = "";
 
-        this.deviceSourceManager = new DeviceSourceManager(this.engine);
-
-        this.deviceSourceManager.onDeviceConnectedObservable.add((device) => {
-            console.log(device);
-        });
+        this.abstractDeviceSourceManager = new AbstractInputManager(this.engine);
 
         this.engine.runRenderLoop(() => {
             /*if (this.deviceSourceManager.getDeviceSource(DeviceType.Keyboard)) {
@@ -30,12 +31,16 @@ export class SceneManager {
             if(this.currentSceneId !== ""){
                 if(this.scenes.has(this.currentSceneId)){
                     const currentScene = this.scenes.get(this.currentSceneId);
-                    currentScene?.Update(this.deviceSourceManager);
+                    currentScene?.Update(this.abstractDeviceSourceManager);
                 }else{
                     console.error("Scene Not Found : " + this.currentSceneId);
                 }
             }
         });
+    }
+
+    async InitPhysic(): Promise<void> {
+        this.hk = await HavokPhysics();
     }
 
     RegisterScene(id: string, scene: GameScene): void {
@@ -49,5 +54,9 @@ export class SceneManager {
 
     GetEngine(): Engine{
         return this.engine;
+    }
+
+    GetPhysic(): HavokPhysicsWithBindings{
+        return this.hk;
     }
 }

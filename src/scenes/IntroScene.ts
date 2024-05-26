@@ -5,6 +5,7 @@ import "@babylonjs/loaders";
 import { Inspector } from '@babylonjs/inspector';
 import { GameScene } from "@/interfaces/GameScene";
 import { SceneManager } from "./SceneManager";
+import { AbstractInputManager } from "@/inputs/AbstractInputManager";
 
 export class IntroScene implements GameScene {
     scene!: Scene;
@@ -17,7 +18,7 @@ export class IntroScene implements GameScene {
         this.scene = this.CreateScene();
     }
 
-    Update(eventManager: DeviceSourceManager): void {
+    Update(eventManager: AbstractInputManager): void {
         /*if (eventManager.getDeviceSource(DeviceType.Keyboard)) {
             if(eventManager.getDeviceSource(DeviceType.Keyboard)?.getInput(90) == 1){
                 
@@ -77,7 +78,7 @@ export class IntroScene implements GameScene {
                 Engine.audioEngine.audioContext.resume().then(() => {
                     music.play();
                     ANote0VideoMat.diffuseTexture = ANote0VideoVidTex;
-                    ANote0VideoMat.roughness = 1;
+                    //ANote0VideoMat.roughness = 1;
                     ANote0VideoMat.emissiveColor = Color3.White();
                     ANote0Video.material = ANote0VideoMat;
                     button1.isEnabled = false;
@@ -85,7 +86,7 @@ export class IntroScene implements GameScene {
                 });
             } else {
                 ANote0VideoMat.diffuseTexture = ANote0VideoVidTex;
-                ANote0VideoMat.roughness = 1;
+                //ANote0VideoMat.roughness = 1;
                 ANote0VideoMat.emissiveColor = Color3.White();
                 ANote0Video.material = ANote0VideoMat;
                 music.play();
