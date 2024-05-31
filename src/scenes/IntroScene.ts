@@ -60,6 +60,8 @@ export class IntroScene implements GameScene {
         const music = new Sound("Music", "./videos/AE33CA75-8EE6-439F-8EF8-3EB03C6F225E.mp3", scene, null, {loop: false, autoplay: false});
 
         VidElement.loop = false;
+        VidElement.autoplay = false;
+        VidElement.pause();
         VidElement.addEventListener('ended', () => {
             music.stop();
             this.sceneManager.Jump("main");
@@ -74,6 +76,7 @@ export class IntroScene implements GameScene {
         button1.cornerRadius = 20;
         button1.background = "green";
         button1.onPointerUpObservable.add(function() {
+            VidElement.play();
             if (Engine.audioEngine?.audioContext?.state === 'suspended') {
                 Engine.audioEngine.audioContext.resume().then(() => {
                     music.play();

@@ -9,7 +9,13 @@ import { defineComponent } from 'vue';
 import { BasicScene } from '@/scenes/BasicScene';
 import { SceneManager } from '@/scenes/SceneManager';
 import { IntroScene } from '@/scenes/IntroScene';
-import { BowChallengeScene } from '@/scenes/competitions/BowChallengeScene'
+import { BowChallengeScene } from '@/scenes/competitions/BowChallengeScene';
+
+import { MainMenuScene } from '@/scenes/menu/MainMenuScene';
+import { SettingMenuScene } from '@/scenes/menu/SettingMenuScene';
+import { HelpMenuScene } from '@/scenes/menu/HelpMenuScene';
+import { CreditMenuScene } from '@/scenes/menu/CreditMenuScene';
+import { SetupMenuScene } from '@/scenes/menu/SetupMenuScene';
 
 export default defineComponent({
   name: 'MainGame',
@@ -21,8 +27,14 @@ export default defineComponent({
       sceneManager.RegisterScene("intro", new IntroScene());
       sceneManager.RegisterScene("main", new BasicScene());
       sceneManager.RegisterScene("challenge_bow", new BowChallengeScene());
+
+      sceneManager.RegisterScene("menu_main", new MainMenuScene());
+      sceneManager.RegisterScene("menu_setting", new SettingMenuScene());
+      sceneManager.RegisterScene("menu_help", new HelpMenuScene());
+      sceneManager.RegisterScene("menu_credit", new CreditMenuScene());
+      sceneManager.RegisterScene("menu_setup", new SetupMenuScene());
     
-      sceneManager.Jump("main");
+      sceneManager.Jump("menu_main");
     });
   }
 });

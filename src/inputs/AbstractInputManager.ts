@@ -37,9 +37,6 @@ export class AbstractInputManager{
     GetUp(){
         if(this.index_source >= 0){
             const detect = this.dsm.getDeviceSource(DeviceType.Keyboard)?.getInput(90) == 1;
-            if(detect) {
-                this.last_time_event = this.GetTime();
-            }
             return detect;
         }
 
@@ -49,9 +46,6 @@ export class AbstractInputManager{
     GetDown(){
         if(this.index_source >= 0){
             const detect = this.dsm.getDeviceSource(DeviceType.Keyboard)?.getInput(83) == 1;
-            if(detect) {
-                this.last_time_event = this.GetTime();
-            }
             return detect;
         }
 
@@ -61,9 +55,6 @@ export class AbstractInputManager{
     GetLeft(){
         if(this.index_source >= 0){
             const detect = this.dsm.getDeviceSource(DeviceType.Keyboard)?.getInput(81) == 1;
-            if(detect) {
-                this.last_time_event = this.GetTime();
-            }
             return detect;
         }
 
@@ -73,9 +64,6 @@ export class AbstractInputManager{
     GetRight(){
         if(this.index_source >= 0){
             const detect = this.dsm.getDeviceSource(DeviceType.Keyboard)?.getInput(68) == 1;
-            if(detect) {
-                this.last_time_event = this.GetTime();
-            }
             return detect;
         }
 
@@ -85,13 +73,14 @@ export class AbstractInputManager{
     GetJump(){
         if(this.index_source >= 0){
             const detect = this.dsm.getDeviceSource(DeviceType.Keyboard)?.getInput(32) == 1;
-            if(detect) {
-                this.last_time_event = this.GetTime();
-            }
             return detect;
         }
 
         return false;
+    }
+
+    ActionDelta(){
+        this.last_time_event = this.GetTime();
     }
 
     CheckDelta(){

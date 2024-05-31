@@ -45,24 +45,28 @@ export class BowChallengeScene implements GameScene {
 
         hemiLight.intensity = 0.5;
 
-        assetsManager.addMeshTask("arrow", "", "./models/", "Arrow.glb");
-        assetsManager.addMeshTask("target", "", "./models/", "Archer_Target.glb");
+        const arrowTeacher = assetsManager.addMeshTask("arrow", "", "./models/", "untitled.glb");
+        //assetsManager.addMeshTask("target", "", "./models/", "Archer_Target.glb");
 
         assetsManager.load();
 
         assetsManager.onFinish = (tasks) => {
-            const sphere = MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene);
+            const arrowMesh = arrowTeacher.loadedMeshes[0];
 
-            sphere.position.y = 4;
+            arrowMesh.scaling.scaleInPlace(0.01);
+
+           /* const sphere = MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene);
+
+            sphere.position.y = 4;*/
 
             const ground = MeshBuilder.CreateGround("ground", {
                 width:10,
                 height:10
             },this.scene);
 
-            camera.target = sphere.position;
+            camera.target = arrowMesh.position;
 
-            const sphereAggregate = new PhysicsAggregate(sphere, PhysicsShapeType.SPHERE, { mass: 1, restitution: 0.75 }, scene);
+            //const sphereAggregate = new PhysicsAggregate(sphere, PhysicsShapeType.SPHERE, { mass: 1, restitution: 0.75 }, scene);
 
             const groundAggregate = new PhysicsAggregate(ground, PhysicsShapeType.BOX, { mass: 0 }, scene);
         };

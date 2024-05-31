@@ -14,6 +14,7 @@ export class BasicScene implements GameScene {
 
     walkingAnim!: AnimationGroup;
     idleAnim!: AnimationGroup;
+    jumpAnim!: AnimationGroup;
     animating!: boolean;
 
     loaded!: boolean;
@@ -31,28 +32,49 @@ export class BasicScene implements GameScene {
 
     Update(eventManage: AbstractInputManager): void {
         if(this.loaded){
-            const heroSpeed = 0.03;
+            const heroSpeed = 0.04;
             const heroRotationSpeed = 0.1;
 
             let keydown = false;
+            let jump = false;
 
             if (eventManage.GetUp()) {
                 if(eventManage.CheckDelta()){
                     this.hero.moveWithCollisions(this.hero.forward.scaleInPlace(heroSpeed));
+                    eventManage.ActionDelta();
                 }
                 keydown = true;
             }
             if (eventManage.GetLeft()) {
                 if(eventManage.CheckDelta()){
                     this.hero.rotate(Vector3.Up(), -heroRotationSpeed);
+                    eventManage.ActionDelta();
                 }
                 keydown = true;
             }
             if (eventManage.GetRight()) {
                 if(eventManage.CheckDelta()){
                     this.hero.rotate(Vector3.Up(), heroRotationSpeed);
+                    eventManage.ActionDelta();
                 }
                 keydown = true;
+            }
+            if (eventManage.GetJump()) {
+                if(eventManage.CheckDelta()){
+                    eventManage.ActionDelta();
+                }
+                jump = true;
+            }
+
+            if(jump){
+                if (!this.animating) {
+                    this.animating = true;
+                    this.jumpAnim.start(false, 1.0, this.jumpAnim.from, this.jumpAnim.to, false);
+                    this.jumpAnim.onAnimationGroupEndObservable.addOnce(() => {
+                        this.animating = false;
+                        jump = false;
+                    });
+                }
             }
 
             if (keydown) {
@@ -106,6 +128,7 @@ export class BasicScene implements GameScene {
             //Get the Samba animation Group
             this.idleAnim = scene.getAnimationGroupByName("Idle")!;
             this.walkingAnim = scene.getAnimationGroupByName("Walking")!;
+            this.jumpAnim = scene.getAnimationGroupByName("Jump")!;
             this.loaded = true;
         });
 
