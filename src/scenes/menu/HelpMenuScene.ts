@@ -6,13 +6,16 @@ import { GameScene } from "@/interfaces/GameScene";
 import { SceneManager } from "../SceneManager";
 import { AbstractInputManager } from "@/inputs/AbstractInputManager";
 
-import {AdvancedDynamicTexture, StackPanel, TextBlock, Button} from "@babylonjs/gui";
+
+import {AdvancedDynamicTexture, StackPanel, TextBlock, Button, Control} from "@babylonjs/gui";
 
 export class HelpMenuScene implements GameScene {
     scene!: Scene;
     engine!: Engine;
+    sceneManager!: SceneManager;
 
     Init(sceneManager: SceneManager): void {
+        this.sceneManager = sceneManager;
         this.engine = sceneManager.GetEngine();
         this.scene = this.CreateScene();
     }
@@ -40,9 +43,27 @@ export class HelpMenuScene implements GameScene {
 
         const advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
-        const panel = new StackPanel(); 
-        panel.spacing = 50;   
-        advancedTexture.addControl(panel);
+        const textblock = new TextBlock();
+        textblock.text = "Olympic Dream - Aide\n\nClavier / Keyboard : \n\nAvancer / Forward : Z / W\nTourner à gauche / Turn Left : Q / A\nTourner à droite / Turn Right : d\nSauter / Jump : Espace / Space\nIntéragir / Interact : E";
+        textblock.fontSize = 24;
+        textblock.color = "white";
+
+        const buttonRet = Button.CreateSimpleButton("butRet", "Retour");
+        buttonRet.width = 0.2;
+        buttonRet.height = "40px";
+        buttonRet.color = "white";
+        buttonRet.cornerRadius = 20;
+        buttonRet.color = "Orange";
+        buttonRet.thickness = 4;
+        buttonRet.background = "green";
+        buttonRet.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        buttonRet.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        buttonRet.onPointerUpObservable.add(() => {
+            this.sceneManager.Jump('menu_main');
+        });
+
+        advancedTexture.addControl(textblock);
+        advancedTexture.addControl(buttonRet);
 
         return scene;
     }

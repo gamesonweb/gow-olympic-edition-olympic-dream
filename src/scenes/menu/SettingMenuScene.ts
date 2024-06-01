@@ -12,6 +12,7 @@ import { MenuOptions } from "@/utils/MenuOption";
 export class SettingMenuScene implements GameScene {
     scene!: Scene;
     engine!: Engine;
+    sceneManager!: SceneManager;
     keyboardShape!: string;
 
     constructor() {
@@ -25,6 +26,7 @@ export class SettingMenuScene implements GameScene {
     }
 
     Init(sceneManager: SceneManager): void {
+        this.sceneManager = sceneManager;
         this.engine = sceneManager.GetEngine();
         this.scene = this.CreateScene();
     }
@@ -75,7 +77,22 @@ export class SettingMenuScene implements GameScene {
             localStorage.setItem('KEYBOARD_SHAPE', this.keyboardShape);
         });
 
+        const buttonRet = Button.CreateSimpleButton("butRet", "Retour");
+        buttonRet.width = 0.2;
+        buttonRet.height = "40px";
+        buttonRet.color = "white";
+        buttonRet.cornerRadius = 20;
+        buttonRet.color = "Orange";
+        buttonRet.thickness = 4;
+        buttonRet.background = "green";
+        buttonRet.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        buttonRet.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        buttonRet.onPointerUpObservable.add(() => {
+            this.sceneManager.Jump('menu_main');
+        });
+
         advancedTexture.addControl(button1);
+        advancedTexture.addControl(buttonRet);
 
         return scene;
     }

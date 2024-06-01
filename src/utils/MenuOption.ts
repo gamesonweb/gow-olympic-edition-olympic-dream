@@ -90,7 +90,10 @@ export class MenuOptions
         button.color = this.color;
         button.alpha = 1.0;
         button.onPointerUpObservable.add(() => {
-            this.options.isVisible = false;            
+            this.options.isVisible = false;
+            const textBlock = this.button.textBlock;
+            if(textBlock)
+                textBlock.text = text;         
         });        
         button.onPointerClickObservable.add(callback); 
         this.options.addControl(button);

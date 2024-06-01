@@ -36,7 +36,8 @@ export class AbstractInputManager{
 
     GetUp(){
         if(this.index_source >= 0){
-            const detect = this.dsm.getDeviceSource(DeviceType.Keyboard)?.getInput(90) == 1;
+            const key = this.IsAzerty() ? 90 : 87;
+            const detect = this.dsm.getDeviceSource(DeviceType.Keyboard)?.getInput(key) == 1;
             return detect;
         }
 
@@ -45,7 +46,8 @@ export class AbstractInputManager{
 
     GetDown(){
         if(this.index_source >= 0){
-            const detect = this.dsm.getDeviceSource(DeviceType.Keyboard)?.getInput(83) == 1;
+            const key = this.IsAzerty() ? 83 : 83;
+            const detect = this.dsm.getDeviceSource(DeviceType.Keyboard)?.getInput(key) == 1;
             return detect;
         }
 
@@ -54,7 +56,8 @@ export class AbstractInputManager{
 
     GetLeft(){
         if(this.index_source >= 0){
-            const detect = this.dsm.getDeviceSource(DeviceType.Keyboard)?.getInput(81) == 1;
+            const key = this.IsAzerty() ? 81 : 65;
+            const detect = this.dsm.getDeviceSource(DeviceType.Keyboard)?.getInput(key) == 1;
             return detect;
         }
 
@@ -79,6 +82,15 @@ export class AbstractInputManager{
         return false;
     }
 
+    GetAction(){
+        if(this.index_source >= 0){
+            const detect = this.dsm.getDeviceSource(DeviceType.Keyboard)?.getInput(69) == 1;
+            return detect;
+        }
+
+        return false;
+    }
+
     ActionDelta(){
         this.last_time_event = this.GetTime();
     }
@@ -89,5 +101,10 @@ export class AbstractInputManager{
 
     GetTime(){
         return new Date().getTime();
+    }
+
+    IsAzerty(){
+        const shape = localStorage.getItem('KEYBOARD_SHAPE');
+        return (shape == null || shape == "AZERTY");
     }
 }

@@ -1,16 +1,17 @@
-import {ActionManager, AnimationGroup, ExecuteCodeAction, Scene, Engine, SceneLoader, FreeCamera, Vector3, HemisphericLight, MeshBuilder, DeviceType, DeviceSourceManager, Mesh, AbstractMesh} from "@babylonjs/core";
+import {ActionManager, AnimationGroup, AssetsManager, Scene, Engine, SceneLoader, FreeCamera, Vector3, HemisphericLight, MeshBuilder, DeviceType, DeviceSourceManager, Mesh, AbstractMesh} from "@babylonjs/core";
 import "@babylonjs/loaders";
 
 import { Inspector } from '@babylonjs/inspector';
 import { GameScene } from "@/interfaces/GameScene";
 import { SceneManager } from "./SceneManager";
 import { AbstractInputManager } from "@/inputs/AbstractInputManager";
-
+import { PhysicsEngine, HavokPlugin, PhysicsAggregate, PhysicsShapeType } from "@babylonjs/core/Physics";
 export class BasicScene implements GameScene {
     scene!: Scene;
     engine!: Engine;
 
     hero!: AbstractMesh;
+    ath!: AbstractMesh;
 
     walkingAnim!: AnimationGroup;
     idleAnim!: AnimationGroup;
@@ -19,11 +20,15 @@ export class BasicScene implements GameScene {
 
     loaded!: boolean;
 
+    sceneManager!: SceneManager;
+    camera!: FreeCamera;
+
     constructor(){
         this.loaded = false;
     }
 
     Init(sceneManager: SceneManager): void {
+        this.sceneManager = sceneManager;
         this.engine = sceneManager.GetEngine();
         this.scene = this.CreateScene();
 
@@ -65,6 +70,15 @@ export class BasicScene implements GameScene {
                 }
                 jump = true;
             }
+            if(eventManage.GetAction()){
+                if(eventManage.CheckDelta()){
+                    const dist = this.hero.position.subtract(this.ath.position).length();
+                    if(dist < 0.7){
+                        this.sceneManager.Jump("challenge_bow");
+                    }
+                    eventManage.ActionDelta();
+                }
+            }
 
             if(jump){
                 if (!this.animating) {
@@ -78,6 +92,7 @@ export class BasicScene implements GameScene {
             }
 
             if (keydown) {
+                this.camera.target = this.hero.position;
                 if (!this.animating) {
                     this.animating = true;
                     this.walkingAnim.start(true, 1.0, this.walkingAnim.from, this.walkingAnim.to, false);
@@ -100,8 +115,14 @@ export class BasicScene implements GameScene {
 
     CreateScene(): Scene {
         const scene = new Scene(this.engine);
-        const camera = new FreeCamera("camera", new Vector3(0, 1, -5), this.scene);
-        //camera.attachControl();
+        this.camera = new FreeCamera("camera", new Vector3(0, 1, -5), this.scene);
+        this.camera.attachControl();
+
+        const assetsManager = new AssetsManager(scene);
+
+        const havokPlugin = new HavokPlugin(true, this.sceneManager.GetPhysic());
+
+        scene.enablePhysics(new Vector3(0, -9.8, 0), havokPlugin);
 
         const hemiLight = new HemisphericLight(
             "hemiLight",
@@ -111,26 +132,35 @@ export class BasicScene implements GameScene {
 
         hemiLight.intensity = 0.5;
 
-        const ground = MeshBuilder.CreateGround("ground", {
-            width:10,
-            height:10
-        },this.scene);
+        const playerTask = assetsManager.addMeshTask("play", "", "./models/", "main.glb");
+        const mapTask = assetsManager.addMeshTask("map", "", "./models/", "map.glb");
+        const athTask = assetsManager.addMeshTask("map", "", "./models/", "key_ath.glb");
 
-        SceneLoader.ImportMesh("", "./models/", "main.glb", scene,  (newMeshes, particleSystems, skeletons, animationGroups) => {
-            this.hero = newMeshes[0];
+        assetsManager.onFinish = (tasks) => {
+            this.hero = playerTask.loadedMeshes[0];
+            const map = mapTask.loadedMeshes[0];
+            this.ath = athTask.loadedMeshes[0];
 
             //Scale the model down
-            this.hero.scaling.scaleInPlace(0.1);
+            this.hero.scaling.scaleInPlace(0.05);
 
             //Lock camera on the character
-            camera.target = this.hero.position;
+            this.camera.target = this.hero.position;
+
+            this.ath.scaling.scaleInPlace(0.003);
+            this.ath.position = new Vector3(-0.74, 0, -8.45);
 
             //Get the Samba animation Group
             this.idleAnim = scene.getAnimationGroupByName("Idle")!;
             this.walkingAnim = scene.getAnimationGroupByName("Walking")!;
             this.jumpAnim = scene.getAnimationGroupByName("Jump")!;
+
+            map.scaling.scaleInPlace(60);
+
             this.loaded = true;
-        });
+        };
+
+        assetsManager.load();
 
         return scene;
     }
