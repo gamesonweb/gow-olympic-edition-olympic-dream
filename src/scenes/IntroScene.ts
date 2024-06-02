@@ -7,8 +7,7 @@ import { GameScene } from "@/interfaces/GameScene";
 import { SceneManager } from "./SceneManager";
 import { AbstractInputManager } from "@/inputs/AbstractInputManager";
 
-export class IntroScene implements GameScene {
-    scene!: Scene;
+export class IntroScene extends GameScene {
     engine!: Engine;
     sceneManager!: SceneManager;
 

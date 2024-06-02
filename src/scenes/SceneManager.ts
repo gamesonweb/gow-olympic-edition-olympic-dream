@@ -10,6 +10,7 @@ import { AbstractInputManager } from "@/inputs/AbstractInputManager";
 
 export class SceneManager {
     currentSceneId: string;
+    lastCurrentSceneId: string;
     scenes: Map<string, GameScene>;
     engine: Engine;
     abstractDeviceSourceManager: AbstractInputManager;
@@ -21,6 +22,7 @@ export class SceneManager {
         this.scenes = new Map<string, GameScene>();
 
         this.currentSceneId = "";
+        this.lastCurrentSceneId = "";
 
         this.abstractDeviceSourceManager = new AbstractInputManager(this.engine);
 
@@ -30,7 +32,14 @@ export class SceneManager {
             }*/
             if(this.currentSceneId !== ""){
                 if(this.scenes.has(this.currentSceneId)){
+                    if(this.scenes.has(this.lastCurrentSceneId) && this.currentSceneId != this.lastCurrentSceneId){
+                        const lastScene = this.scenes.get(this.lastCurrentSceneId);
+                        lastScene?.Revoke();
+                        this.lastCurrentSceneId = "";
+                    }
                     const currentScene = this.scenes.get(this.currentSceneId);
+                    this.lastCurrentSceneId = this.currentSceneId;
+                    currentScene?.Invoke();
                     currentScene?.Update(this.abstractDeviceSourceManager);
                 }else{
                     console.error("Scene Not Found : " + this.currentSceneId);

@@ -8,9 +8,22 @@ import { PhysicsEngine, HavokPlugin, PhysicsAggregate, PhysicsShapeType } from "
 import { AbstractInputManager } from "@/inputs/AbstractInputManager";
 import {AdvancedDynamicTexture, StackPanel, TextBlock, Button, Control} from "@babylonjs/gui";
 
-export class BowChallengeScene implements GameScene {
+const formatDuration = (milliseconds: number)=> {
+    // Calculate minutes, seconds, and milliseconds
+    const minutes = Math.floor(milliseconds / (1000 * 60));
+    const seconds = Math.floor((milliseconds % (1000 * 60)) / 1000);
+    const millis = milliseconds % 1000;
+
+    // Format each part to be at least two digits for minutes and seconds, and three digits for milliseconds
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(seconds).padStart(2, '0');
+    const formattedMillis = String(millis).padStart(3, '0');
+
+    return `${formattedMinutes}:${formattedSeconds}:${formattedMillis}`;
+}
+
+export class BowChallengeScene extends GameScene {
     sceneManager!: SceneManager;
-    scene!: Scene;
     engine!: Engine;
 
     heroMesh!: AbstractMesh;
@@ -25,8 +38,12 @@ export class BowChallengeScene implements GameScene {
     camera!: FreeCamera;
 
     end: Vector3;
+    chrono!: TextBlock;
+    startDate!: number;
+    lastElpase!: number;
 
     constructor() {
+        super();
         this.loaded = false;
         this.end = new Vector3(-1.2459694038785414,0, -9.979610320998791);
     }
@@ -39,6 +56,10 @@ export class BowChallengeScene implements GameScene {
 
     Update(eventManage: AbstractInputManager): void {
         if(this.loaded){
+            const elapse = (new Date().getTime()) - this.startDate;
+            this.lastElpase = elapse;
+            this.chrono.text = formatDuration(elapse);
+
             const heroSpeed = 0.04;
             const heroRotationSpeed = 0.1;
 
@@ -92,6 +113,7 @@ export class BowChallengeScene implements GameScene {
 
             if (keydown) {
                 if(this.heroMesh.position.subtract(this.end).length() < 0.8){
+                    this.WriteScore();
                     this.sceneManager.Jump('end');
                 }
                 this.camera.target = this.heroMesh.position;
@@ -117,7 +139,7 @@ export class BowChallengeScene implements GameScene {
 
     CreateScene(): Scene {
         const scene = new Scene(this.engine);
-        this.camera = new FreeCamera("camera", new Vector3(0, 1, -5), this.scene);
+        this.camera = new FreeCamera("camera", new Vector3(0, 1, 5), this.scene);
         this.camera.attachControl();
 
         const assetsManager = new AssetsManager(scene);
@@ -146,6 +168,8 @@ export class BowChallengeScene implements GameScene {
             this.heroMesh.scaling.scaleInPlace(0.05);
             mapMesh.scaling.scaleInPlace(50);
 
+            this.heroMesh.rotate(Vector3.Up(), Math.PI);
+
             this.idleAnim = scene.getAnimationGroupByName("Idle")!;
             this.walkingAnim = scene.getAnimationGroupByName("Run")!;
             this.jumpAnim = scene.getAnimationGroupByName("Jump")!;
@@ -162,6 +186,7 @@ export class BowChallengeScene implements GameScene {
             this.camera.target = this.heroMesh.position;
 
             this.loaded = true;
+            this.startDate = new Date().getTime();
 
             //const sphereAggregate = new PhysicsAggregate(sphere, PhysicsShapeType.SPHERE, { mass: 1, restitution: 0.75 }, scene);
 
@@ -174,9 +199,38 @@ export class BowChallengeScene implements GameScene {
         textblock.text = "Courez jusqu'à la cible !";
         textblock.fontSize = 24;
         textblock.color = "white";
+        textblock.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        textblock.textVerticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+
+        this.chrono = new TextBlock();
+        this.chrono.text = "00:00:00";
+        this.chrono.fontSize = 24;
+        this.chrono.color = "white";
+        this.chrono.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        this.chrono.textVerticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        this.chrono.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        this.chrono.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        this.chrono.resizeToFit = true;
 
         advancedTexture.addControl(textblock);
+        advancedTexture.addControl(this.chrono);
 
         return scene;
+    }
+
+    WriteScore(): void {
+        const data = {
+            'username': localStorage.getItem('USERNAME'),
+            'stage': 'Big Run',
+            'score': formatDuration(this.lastElpase)
+        };
+
+        fetch('https://backend.gow.valoriatechnologia.com/records/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(console.log).catch(console.log);
     }
 }

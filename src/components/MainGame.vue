@@ -16,6 +16,8 @@ import { SettingMenuScene } from '@/scenes/menu/SettingMenuScene';
 import { HelpMenuScene } from '@/scenes/menu/HelpMenuScene';
 import { CreditMenuScene } from '@/scenes/menu/CreditMenuScene';
 import { EndingMenuScene } from '@/scenes/menu/EndingMenuScene';
+import { SetupMenuScene } from '@/scenes/menu/SetupMenuScene';
+import { ScoreMenuScene } from '@/scenes/menu/ScoreMenuScene';
 
 export default defineComponent({
   name: 'MainGame',
@@ -32,6 +34,8 @@ export default defineComponent({
       sceneManager.RegisterScene("menu_setting", new SettingMenuScene());
       sceneManager.RegisterScene("menu_help", new HelpMenuScene());
       sceneManager.RegisterScene("menu_credit", new CreditMenuScene());
+      sceneManager.RegisterScene("menu_setup", new SetupMenuScene());
+      sceneManager.RegisterScene("menu_score", new ScoreMenuScene());
 
       sceneManager.RegisterScene("end", new EndingMenuScene());
     

@@ -6,11 +6,10 @@ import { GameScene } from "@/interfaces/GameScene";
 import { SceneManager } from "../SceneManager";
 import { AbstractInputManager } from "@/inputs/AbstractInputManager";
 
-import {AdvancedDynamicTexture, StackPanel, TextBlock, Button} from "@babylonjs/gui";
+import {AdvancedDynamicTexture, StackPanel, TextBlock, Button, Control} from "@babylonjs/gui";
 import { MenuOptions } from "@/utils/MenuOption";
 
-export class MainMenuScene implements GameScene {
-    scene!: Scene;
+export class MainMenuScene extends GameScene {
     engine!: Engine;
     sceneManager!: SceneManager;
 
@@ -51,6 +50,8 @@ export class MainMenuScene implements GameScene {
         textblock.text = "Olympic Dream";
         textblock.fontSize = 24;
         textblock.color = "white";
+        textblock.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        textblock.textVerticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
 
         const button1 = Button.CreateSimpleButton("but1", "Jouer");
         button1.width = 0.2;
@@ -61,7 +62,8 @@ export class MainMenuScene implements GameScene {
         button1.thickness = 4;
         button1.background = "green";
         button1.onPointerUpObservable.add(() => {
-            this.sceneManager.Jump('intro');
+            if(this.isInvoke)
+                this.sceneManager.Jump('menu_setup');
         });
 
         const button2 = Button.CreateSimpleButton("but2", "Paramètres");
@@ -73,7 +75,8 @@ export class MainMenuScene implements GameScene {
         button2.thickness = 4;
         button2.background = "green";
         button2.onPointerUpObservable.add(() => {
-            this.sceneManager.Jump('menu_setting');
+            if(this.isInvoke)
+                this.sceneManager.Jump('menu_setting');
         });
 
         const button3 = Button.CreateSimpleButton("but3", "Aides");
@@ -85,10 +88,11 @@ export class MainMenuScene implements GameScene {
         button3.cornerRadius = 20;
         button3.background = "green";
         button3.onPointerUpObservable.add(() => {
-            this.sceneManager.Jump('menu_help');
+            if(this.isInvoke)
+                this.sceneManager.Jump('menu_help');
         });
 
-        const button4 = Button.CreateSimpleButton("but1", "Crédits");
+        const button4 = Button.CreateSimpleButton("but4", "Crédits");
         button4.width = 0.2;
         button4.height = "40px";
         button4.color = "white";
@@ -97,14 +101,30 @@ export class MainMenuScene implements GameScene {
         button4.cornerRadius = 20;
         button4.background = "green";
         button4.onPointerUpObservable.add(() => {
-            this.sceneManager.Jump('menu_credit');
+            if(this.isInvoke)
+                this.sceneManager.Jump('menu_credit');
         });
+
+        const button5 = Button.CreateSimpleButton("but5", "Scores");
+        button5.width = 0.2;
+        button5.height = "40px";
+        button5.color = "white";
+        button5.color = "Orange";
+        button5.thickness = 4;
+        button5.cornerRadius = 20;
+        button5.background = "green";
+        button5.onPointerUpObservable.add(() => {
+            if(this.isInvoke)
+                this.sceneManager.Jump('menu_score');
+        });
+
 
         panel.addControl(textblock);
         panel.addControl(button1);
         panel.addControl(button2);
         panel.addControl(button3);
         panel.addControl(button4);
+        panel.addControl(button5);
 
 
         return scene;

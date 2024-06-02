@@ -7,9 +7,10 @@ import { SceneManager } from "../SceneManager";
 import { AbstractInputManager } from "@/inputs/AbstractInputManager";
 import {AdvancedDynamicTexture, StackPanel, TextBlock, Button, Control} from "@babylonjs/gui";
 
-export class EndingMenuScene extends GameScene {
+export class ScoreMenuScene extends GameScene {
     engine!: Engine;
     sceneManager!: SceneManager;
+    textblock!: TextBlock;
 
     Init(sceneManager: SceneManager): void {
         this.sceneManager = sceneManager;
@@ -40,10 +41,11 @@ export class EndingMenuScene extends GameScene {
 
         const advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
-        const textblock = new TextBlock();
-        textblock.text = "Olympic Dream\n\nVous avez donné la flamme olympique au prochaine athlète\nBravo";
-        textblock.fontSize = 24;
-        textblock.color = "white";
+        this.textblock = new TextBlock();
+        this.textblock.text = "Olympic Dream - Score\n\n";
+        this.textblock.fontSize = 24;
+        this.textblock.color = "white";
+        this.textblock.resizeToFit = true;
 
         const buttonRet = Button.CreateSimpleButton("butRet", "Retour");
         buttonRet.width = 0.2;
@@ -59,9 +61,43 @@ export class EndingMenuScene extends GameScene {
             this.sceneManager.Jump('menu_main');
         });
 
-        advancedTexture.addControl(textblock);
+        const buttonRef = Button.CreateSimpleButton("butRef", "Refresh");
+        buttonRef.width = 0.2;
+        buttonRef.height = "40px";
+        buttonRef.color = "white";
+        buttonRef.cornerRadius = 20;
+        buttonRef.color = "Orange";
+        buttonRef.thickness = 4;
+        buttonRef.background = "green";
+        buttonRef.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        buttonRef.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        buttonRef.onPointerUpObservable.add(() => {
+            this.FetchScore();
+        });
+
+        advancedTexture.addControl(this.textblock);
         advancedTexture.addControl(buttonRet);
+        advancedTexture.addControl(buttonRef);
+
+        this.FetchScore();
 
         return scene;
+    }
+
+    FetchScore(): void {
+        fetch('https://backend.gow.valoriatechnologia.com/records/').then((resp) => {
+            resp.json().then((data) => {
+                console.log(data);
+                let dataStr = "Olympic Dream - Score\n\nUsername - Stage - Score\n";
+                data.forEach((element:any) => {
+                    dataStr = dataStr + element.username + " - " + element.stage + " - " + element.score + "\n";
+                });
+                this.textblock.text = dataStr;
+            }).catch((err)  => {
+                console.log(err);
+            });
+        }).catch((err) => {
+            console.log(err);
+        });
     }
 }

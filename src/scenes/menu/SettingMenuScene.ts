@@ -9,13 +9,13 @@ import { AbstractInputManager } from "@/inputs/AbstractInputManager";
 import {AdvancedDynamicTexture, StackPanel, TextBlock, Button, Control} from "@babylonjs/gui";
 import { MenuOptions } from "@/utils/MenuOption";
 
-export class SettingMenuScene implements GameScene {
-    scene!: Scene;
+export class SettingMenuScene extends GameScene {
     engine!: Engine;
     sceneManager!: SceneManager;
     keyboardShape!: string;
 
     constructor() {
+        super();
         const ks = localStorage.getItem('KEYBOARD_SHAPE');
         if(ks==null){
             this.keyboardShape = "AZERTY";

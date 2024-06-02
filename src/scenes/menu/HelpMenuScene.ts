@@ -9,8 +9,7 @@ import { AbstractInputManager } from "@/inputs/AbstractInputManager";
 
 import {AdvancedDynamicTexture, StackPanel, TextBlock, Button, Control} from "@babylonjs/gui";
 
-export class HelpMenuScene implements GameScene {
-    scene!: Scene;
+export class HelpMenuScene extends GameScene {
     engine!: Engine;
     sceneManager!: SceneManager;
 

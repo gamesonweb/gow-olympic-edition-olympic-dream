@@ -5,9 +5,9 @@ import { Inspector } from '@babylonjs/inspector';
 import { GameScene } from "@/interfaces/GameScene";
 import { SceneManager } from "../SceneManager";
 import { AbstractInputManager } from "@/inputs/AbstractInputManager";
-import {AdvancedDynamicTexture, StackPanel, TextBlock, Button, Control} from "@babylonjs/gui";
+import {AdvancedDynamicTexture, StackPanel, TextBlock, Button, Control, InputText} from "@babylonjs/gui";
 
-export class EndingMenuScene extends GameScene {
+export class SetupMenuScene extends GameScene {
     engine!: Engine;
     sceneManager!: SceneManager;
 
@@ -40,10 +40,10 @@ export class EndingMenuScene extends GameScene {
 
         const advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
-        const textblock = new TextBlock();
-        textblock.text = "Olympic Dream\n\nVous avez donné la flamme olympique au prochaine athlète\nBravo";
-        textblock.fontSize = 24;
-        textblock.color = "white";
+        const panel = new StackPanel(); 
+        panel.spacing = 50;   
+        advancedTexture.addControl(panel); 
+
 
         const buttonRet = Button.CreateSimpleButton("butRet", "Retour");
         buttonRet.width = 0.2;
@@ -59,7 +59,36 @@ export class EndingMenuScene extends GameScene {
             this.sceneManager.Jump('menu_main');
         });
 
-        advancedTexture.addControl(textblock);
+        const input = new InputText();
+        input.width = 0.2;
+        input.maxWidth = 0.2;
+        input.height = "40px";
+        input.text = "Your username";
+        input.color = "white";
+        input.background = "green";
+
+        const button1 = Button.CreateSimpleButton("but1", "Jouer");
+        button1.width = 0.2;
+        button1.height = "40px";
+        button1.color = "white";
+        button1.cornerRadius = 20;
+        button1.color = "Orange";
+        button1.thickness = 4;
+        button1.background = "green";
+        button1.onPointerUpObservable.add(() => {
+            if(this.isInvoke){
+                if(input.text == ""){
+                    alert("Empty username !");
+                }else{
+                    console.log("Username: " + input.text);
+                    localStorage.setItem('USERNAME', input.text);
+                    this.sceneManager.Jump('intro');
+                }
+            }
+        });
+
+        panel.addControl(input);
+        panel.addControl(button1);
         advancedTexture.addControl(buttonRet);
 
         return scene;

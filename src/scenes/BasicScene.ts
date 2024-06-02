@@ -1,13 +1,13 @@
-import {ActionManager, AnimationGroup, AssetsManager, Scene, Engine, SceneLoader, FreeCamera, Vector3, HemisphericLight, MeshBuilder, DeviceType, DeviceSourceManager, Mesh, AbstractMesh} from "@babylonjs/core";
+import {ActionManager, TransformNode, AnimationGroup, AssetsManager, Scene, Engine, FreeCamera, Vector3, HemisphericLight, MeshBuilder, DeviceType, DeviceSourceManager, Mesh, AbstractMesh} from "@babylonjs/core";
 import "@babylonjs/loaders";
 
 import { Inspector } from '@babylonjs/inspector';
 import { GameScene } from "@/interfaces/GameScene";
 import { SceneManager } from "./SceneManager";
 import { AbstractInputManager } from "@/inputs/AbstractInputManager";
-import { PhysicsEngine, HavokPlugin, PhysicsAggregate, PhysicsShapeType } from "@babylonjs/core/Physics";
-export class BasicScene implements GameScene {
-    scene!: Scene;
+import { PhysicsEngine, HavokPlugin, PhysicsAggregate, PhysicsShapeType, PhysicsImpostor } from "@babylonjs/core/Physics";
+
+export class BasicScene extends GameScene {
     engine!: Engine;
 
     hero!: AbstractMesh;
@@ -24,6 +24,7 @@ export class BasicScene implements GameScene {
     camera!: FreeCamera;
 
     constructor(){
+        super();
         this.loaded = false;
     }
 
@@ -140,6 +141,7 @@ export class BasicScene implements GameScene {
             this.hero = playerTask.loadedMeshes[0];
             const map = mapTask.loadedMeshes[0];
             this.ath = athTask.loadedMeshes[0];
+
 
             //Scale the model down
             this.hero.scaling.scaleInPlace(0.05);

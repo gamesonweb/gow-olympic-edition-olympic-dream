@@ -7,8 +7,7 @@ import { SceneManager } from "../SceneManager";
 import { AbstractInputManager } from "@/inputs/AbstractInputManager";
 import {AdvancedDynamicTexture, StackPanel, TextBlock, Button, Control} from "@babylonjs/gui";
 
-export class CreditMenuScene implements GameScene {
-    scene!: Scene;
+export class CreditMenuScene extends GameScene {
     engine!: Engine;
     sceneManager!: SceneManager;
 
