@@ -54,7 +54,7 @@ export class SettingMenuScene extends GameScene {
 
         const advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
-        const dropdownA = new MenuOptions(advancedTexture, "Clavier / Keyboard Shape", 180, 40, "orange", "green", Control.VERTICAL_ALIGNMENT_CENTER, Control.HORIZONTAL_ALIGNMENT_CENTER);
+        const dropdownA = new MenuOptions(advancedTexture, "Clavier / Keyboard Shape : " + this.keyboardShape , 250, 40, "orange", "green", Control.VERTICAL_ALIGNMENT_CENTER, Control.HORIZONTAL_ALIGNMENT_CENTER);
         dropdownA.top = "10px";
         dropdownA.left = "10px";
         dropdownA.addOption("opt1", "AZERTY", () => {

@@ -41,10 +41,12 @@ export class BowChallengeScene extends GameScene {
     chrono!: TextBlock;
     startDate!: number;
     lastElpase!: number;
+    firstMove: boolean;
 
     constructor() {
         super();
         this.loaded = false;
+        this.firstMove = false;
         this.end = new Vector3(-1.2459694038785414,0, -9.979610320998791);
     }
 
@@ -56,9 +58,11 @@ export class BowChallengeScene extends GameScene {
 
     Update(eventManage: AbstractInputManager): void {
         if(this.loaded){
-            const elapse = (new Date().getTime()) - this.startDate;
-            this.lastElpase = elapse;
-            this.chrono.text = formatDuration(elapse);
+            if(this.firstMove){
+                const elapse = (new Date().getTime()) - this.startDate;
+                this.lastElpase = elapse;
+                this.chrono.text = formatDuration(elapse);
+            }
 
             const heroSpeed = 0.04;
             const heroRotationSpeed = 0.1;
@@ -112,6 +116,11 @@ export class BowChallengeScene extends GameScene {
             }
 
             if (keydown) {
+                if(!this.firstMove){
+                    this.startDate = new Date().getTime();
+                    this.firstMove = true;
+                }
+
                 if(this.heroMesh.position.subtract(this.end).length() < 0.8){
                     this.WriteScore();
                     this.sceneManager.Jump('end');
@@ -186,7 +195,6 @@ export class BowChallengeScene extends GameScene {
             this.camera.target = this.heroMesh.position;
 
             this.loaded = true;
-            this.startDate = new Date().getTime();
 
             //const sphereAggregate = new PhysicsAggregate(sphere, PhysicsShapeType.SPHERE, { mass: 1, restitution: 0.75 }, scene);
 

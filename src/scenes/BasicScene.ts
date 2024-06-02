@@ -6,6 +6,7 @@ import { GameScene } from "@/interfaces/GameScene";
 import { SceneManager } from "./SceneManager";
 import { AbstractInputManager } from "@/inputs/AbstractInputManager";
 import { PhysicsEngine, HavokPlugin, PhysicsAggregate, PhysicsShapeType, PhysicsImpostor } from "@babylonjs/core/Physics";
+import {AdvancedDynamicTexture, StackPanel, TextBlock, Button, Control} from "@babylonjs/gui";
 
 export class BasicScene extends GameScene {
     engine!: Engine;
@@ -22,10 +23,13 @@ export class BasicScene extends GameScene {
 
     sceneManager!: SceneManager;
     camera!: FreeCamera;
+    textblock!: TextBlock;
+    dialog: boolean;
 
     constructor(){
         super();
         this.loaded = false;
+        this.dialog = false;
     }
 
     Init(sceneManager: SceneManager): void {
@@ -74,11 +78,22 @@ export class BasicScene extends GameScene {
             if(eventManage.GetAction()){
                 if(eventManage.CheckDelta()){
                     const dist = this.hero.position.subtract(this.ath.position).length();
-                    if(dist < 0.7){
+                    if(dist < 0.7 && this.dialog){
                         this.sceneManager.Jump("challenge_bow");
                     }
                     eventManage.ActionDelta();
                 }
+            }
+
+            const dist = this.hero.position.subtract(this.ath.position).length();
+            if(dist < 0.7){
+                this.textblock.text = "Pour que j'accepte de prendre la flamme.\nTu dois d'abord finir mon épreuve de course !\n(Press E to start)";
+                this.dialog = true;
+            }
+
+            if(dist > 1){
+                this.textblock.text = "";
+                this.dialog = false;
             }
 
             if(jump){
@@ -116,7 +131,7 @@ export class BasicScene extends GameScene {
 
     CreateScene(): Scene {
         const scene = new Scene(this.engine);
-        this.camera = new FreeCamera("camera", new Vector3(0, 1, -5), this.scene);
+        this.camera = new FreeCamera("camera", new Vector3(6, 4, -2), this.scene);
         this.camera.attachControl();
 
         const assetsManager = new AssetsManager(scene);
@@ -146,11 +161,16 @@ export class BasicScene extends GameScene {
             //Scale the model down
             this.hero.scaling.scaleInPlace(0.05);
 
-            //Lock camera on the character
-            this.camera.target = this.hero.position;
+            
 
             this.ath.scaling.scaleInPlace(0.003);
             this.ath.position = new Vector3(-0.74, 0, -8.45);
+            
+
+            this.hero.position = new Vector3(0.5,0,6);
+
+            //Lock camera on the character
+            this.camera.target = this.hero.position;
 
             //Get the Samba animation Group
             this.idleAnim = scene.getAnimationGroupByName("Idle")!;
@@ -163,6 +183,18 @@ export class BasicScene extends GameScene {
         };
 
         assetsManager.load();
+
+        const advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
+        this.textblock = new TextBlock();
+        this.textblock.text = "";
+        this.textblock.fontSize = 24;
+        this.textblock.color = "black";
+        this.textblock.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        this.textblock.textVerticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        this.textblock.resizeToFit = true;
+
+        advancedTexture.addControl(this.textblock);
 
         return scene;
     }

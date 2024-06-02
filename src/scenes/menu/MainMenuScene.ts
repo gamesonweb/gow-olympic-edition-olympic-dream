@@ -7,7 +7,6 @@ import { SceneManager } from "../SceneManager";
 import { AbstractInputManager } from "@/inputs/AbstractInputManager";
 
 import {AdvancedDynamicTexture, StackPanel, TextBlock, Button, Control} from "@babylonjs/gui";
-import { MenuOptions } from "@/utils/MenuOption";
 
 export class MainMenuScene extends GameScene {
     engine!: Engine;
@@ -30,7 +29,7 @@ export class MainMenuScene extends GameScene {
     CreateScene(): Scene {
         const scene = new Scene(this.engine);
         const camera = new FreeCamera("camera", new Vector3(0, 1, -5), this.scene);
-        //camera.attachControl();
+        camera.attachControl();
 
         const hemiLight = new HemisphericLight(
             "hemiLight",
@@ -45,13 +44,6 @@ export class MainMenuScene extends GameScene {
         const panel = new StackPanel(); 
         panel.spacing = 50;   
         advancedTexture.addControl(panel); 
-
-        const textblock = new TextBlock();
-        textblock.text = "Olympic Dream";
-        textblock.fontSize = 24;
-        textblock.color = "white";
-        textblock.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-        textblock.textVerticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
 
         const button1 = Button.CreateSimpleButton("but1", "Jouer");
         button1.width = 0.2;
@@ -119,13 +111,12 @@ export class MainMenuScene extends GameScene {
         });
 
 
-        panel.addControl(textblock);
+        
         panel.addControl(button1);
         panel.addControl(button2);
         panel.addControl(button3);
         panel.addControl(button4);
         panel.addControl(button5);
-
 
         return scene;
     }
